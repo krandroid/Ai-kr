@@ -6,33 +6,38 @@ plugins {
 android {
     namespace 'com.kr.eqai'
     compileSdk 36
-
     defaultConfig {
         applicationId "com.kr.eqai"
-        minSdk 24
+        minSdk 26
         targetSdk 36
-        versionCode 2
-        versionName "1.1"
+        versionCode 4
+        versionName "2.0-AI"
     }
-
     buildTypes {
-        release {
-            minifyEnabled false
-        }
+        release { minifyEnabled false }
     }
-    
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlinOptions { jvmTarget = '17' }
+
+    buildFeatures {
+        mlModelBinding true
     }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+
+    // AI Android 16 On-Device
+    implementation 'androidx.ml:mlkit:1.0.0-beta1'
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.4'
+
+    // Voice command
+    implementation 'com.google.android.gms:play-services-mlkit-language-id:17.0.0'
 }
