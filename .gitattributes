@@ -1,1 +1,3 @@
 *.jar binary
+*.gradle text eol=lf
+*.properties text eol=lf
