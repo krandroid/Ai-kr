@@ -1,8 +1,9 @@
 package com.kr.eqai
 
 import android.Manifest
+import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
-import android.media.audiofx.Visualizer
+import android.media.audiofx.Virtualizer
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.SeekBar
@@ -17,12 +18,15 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
 
     private var equalizer: Equalizer? = null
-    private var visualizer: Visualizer? = null
+    private var bassBoost: BassBoost? = null
+    private var virtualizer: Virtualizer? = null
+
     private val seekBars = mutableListOf<SeekBar>()
     private val freqLabels = arrayOf("31Hz", "62Hz", "125Hz", "250Hz", "500Hz", "1kHz", "2kHz", "4kHz", "8kHz", "16kHz")
     private lateinit var aiStatus: TextView
+    private lateinit var labelBass: TextView
+    private lateinit var labelVirtual: TextView
 
-    // Preset AI: Genre -> Band levels
     private val aiPresets = mapOf(
         "EDM" to shortArrayOf(600, 400, 200, 0, 0, 200, 400, 500, 400, 300),
         "Rock" to shortArrayOf(400, 300, 0, -100, -200, 200, 400, 500, 400, 300),
@@ -37,46 +41,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         aiStatus = findViewById(R.id.ai_status)
+        labelBass = findViewById(R.id.label_bass)
+        labelVirtual = findViewById(R.id.label_virtual)
+
         requestPermission()
-        setupEqualizer()
+        setupAudioEffects()
+        setupManualBassControls()
         setupAIButton()
         setupPresets()
     }
 
-    private fun setupAIButton() {
-        findViewById<MaterialButton>(R.id.btn_ai).setOnClickListener {
-            runAIAnalysis()
-        }
-
-        findViewById<SwitchMaterial>(R.id.switch_eq).setOnCheckedChangeListener { _, isChecked ->
-            equalizer?.enabled = isChecked
-        }
-    }
-
-    private fun runAIAnalysis() {
-        aiStatus.text = "AI Status: Listening to audio..."
-
-        // Simulasi AI Android 16 On-Device: analisa 3 detik
-        aiStatus.postDelayed({
-            val genres = aiPresets.keys.toList()
-            val detectedGenre = genres[Random.nextInt(genres.size)]
-
-            aiStatus.text = "AI Status: Detected $detectedGenre"
-            Toast.makeText(this, "AI: Genre $detectedGenre terdeteksi!", Toast.LENGTH_SHORT).show()
-
-            // Apply AI preset
-            aiPresets[detectedGenre]?.let { applyPreset(it) }
-
-            aiStatus.postDelayed({
-                aiStatus.text = "AI Status: Auto-EQ Applied | Standby"
-            }, 2000)
-
-        }, 3000)
-    }
-
-    private fun setupEqualizer() {
+    private fun setupAudioEffects() {
         try {
             equalizer = Equalizer(0, 0).apply { enabled = true }
+            bassBoost = BassBoost(0, 0).apply { enabled = true }
+            virtualizer = Virtualizer(0, 0).apply { enabled = true }
+
             val eqLayout = findViewById<LinearLayout>(R.id.eq_layout)
             val minLevel = equalizer!!.bandLevelRange[0]
             val maxLevel = equalizer!!.bandLevelRange[1]
@@ -89,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val seekBar = SeekBar(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
+                    layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 350)
                     rotation = -90f
                     max = maxLevel - minLevel
                     progress = (equalizer!!.getBandLevel(i.toShort()) - minLevel)
@@ -99,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 val label = TextView(this).apply {
                     text = freqLabels.getOrNull(i)?: "Band$i"
                     setTextColor(0xFFFFFFFF.toInt())
-                    textSize = 10f
+                    textSize = 9f
                     gravity = android.view.Gravity.CENTER
                 }
 
@@ -117,8 +97,54 @@ class MainActivity : AppCompatActivity() {
                 seekBars.add(seekBar)
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "EQ Error: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "AudioEffect Error: ${e.message}", Toast.LENGTH_LONG).show()
         }
+
+        findViewById<SwitchMaterial>(R.id.switch_eq).setOnCheckedChangeListener { _, isChecked ->
+            equalizer?.enabled = isChecked
+            bassBoost?.enabled = isChecked
+            virtualizer?.enabled = isChecked
+        }
+    }
+
+    private fun setupManualBassControls() {
+        // Bass Boost: 0-1000 = 0-100%
+        findViewById<SeekBar>(R.id.seek_bass).setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                bassBoost?.setStrength(progress.toShort())
+                labelBass.text = "Bass Boost: ${progress/10}%"
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        // Virtualizer: 0-1000 = 0-100%
+        findViewById<SeekBar>(R.id.seek_virtual).setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                virtualizer?.setStrength(progress.toShort())
+                labelVirtual.text = "3D Surround: ${progress/10}%"
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    private fun setupAIButton() {
+        findViewById<MaterialButton>(R.id.btn_ai).setOnClickListener {
+            runAIAnalysis()
+        }
+    }
+
+    private fun runAIAnalysis() {
+        aiStatus.text = "AI Status: Analyzing audio..."
+        aiStatus.postDelayed({
+            val genres = aiPresets.keys.toList()
+            val detectedGenre = genres[Random.nextInt(genres.size)]
+            aiStatus.text = "AI Status: Detected $detectedGenre"
+            Toast.makeText(this, "AI: $detectedGenre EQ Applied!", Toast.LENGTH_SHORT).show()
+            aiPresets[detectedGenre]?.let { applyPreset(it) }
+            aiStatus.postDelayed({ aiStatus.text = "AI Status: Standby" }, 2000)
+        }, 2500)
     }
 
     private fun setupPresets() {
@@ -145,7 +171,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         equalizer?.release()
-        visualizer?.release()
+        bassBoost?.release()
+        virtualizer?.release()
         super.onDestroy()
     }
 }
