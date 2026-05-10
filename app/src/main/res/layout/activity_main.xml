@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/kr_black" android:gravity="center" android:orientation="vertical" android:padding="24dp">
-    <ImageView android:layout_width="100dp" android:layout_height="100dp" android:src="@mipmap/ic_launcher_foreground" android:layout_marginBottom="24dp"/>
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="KR Ai" android:textColor="@color/kr_gold" android:textSize="28sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AI Video Generator" android:textColor="@color/kr_gold_dark" android:textSize="14sp" android:layout_marginBottom="32dp"/>
-        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPrompt" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/kr_white" android:minLines="3"/>
-    </com.google.android.material.textfield.TextInputLayout>
-    <Button android:id="@+id/btnGenerate" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="24dp" android:text="Generate Video Gratis" android:backgroundTint="@color/kr_gold" android:textColor="@color/kr_black" android:textStyle="bold" android:textSize="16sp"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!" />
+
 </LinearLayout>
