@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.kr.eqai'
-    compileSdk 36
+    compileSdk 33
     defaultConfig {
         applicationId "com.kr.eqai"
         minSdk 26
-        targetSdk 36
+        targetSdk 33
         versionCode 4
         versionName "2.0-AI"
     }
@@ -41,3 +41,4 @@ dependencies {
     // Voice command
     implementation 'com.google.android.gms:play-services-mlkit-language-id:17.0.0'
 }
+implementation 'com.google.android.material:material:1.9.0'
