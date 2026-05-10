@@ -1,6 +1,3 @@
 <resources>
-    <string name="app_name">KR Ai</string>
-    <string name="hint_prompt">Masukkan prompt video kamu...</string>
-    <string name="btn_generate">Generate Video Gratis</string>
-    <string name="app_desc">AI Video Generator</string>
+    <string name="app_name">Dola AI</string>
 </resources>
